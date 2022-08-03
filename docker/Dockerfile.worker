@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM python:slim
 
 ENV PYTHONUNBUFFERED=1
 
@@ -12,14 +12,13 @@ ARG USER_GID=$USER_UID
 RUN groupadd --gid $USER_GID $USERNAME && \
     useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 
-RUN apt update && \
-    apt install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
-    python3-pip \
     curl
-    
-RUN apt install -y --no-install-recommends \
+
+RUN apt-get install -y --no-install-recommends \
     poppler-utils \
     libfile-mimeinfo-perl \
     libimage-exiftool-perl \
@@ -31,7 +30,7 @@ RUN apt install -y --no-install-recommends \
     libmagic1 \
     webp
 
-RUN apt install -y --no-install-recommends\
+RUN apt-get install -y --no-install-recommends\
     libreoffice \
     inkscape \
     ffmpeg \
@@ -50,10 +49,9 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt --user --no-cache-dir
 
-RUN apt purge -y --auto-remove \
+RUN apt-get purge -y --auto-remove \
     build-essential \
     ca-certificates \
-    python3-pip \
     curl
-    
+
 CMD ["celery", "-A", "worker", "worker", "--loglevel=info"]
