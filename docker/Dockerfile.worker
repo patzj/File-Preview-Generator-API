@@ -1,4 +1,4 @@
-FROM python:slim
+FROM ubuntu:latest
 
 ENV PYTHONUNBUFFERED=1
 
@@ -16,6 +16,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
+    python3-pip \
     curl
 
 RUN apt-get install -y --no-install-recommends \
@@ -43,15 +44,11 @@ RUN curl -LO https://github.com/jgraph/drawio-desktop/releases/download/v${DRAWI
 
 USER $USERNAME
 
-COPY app .
+COPY app app/
 COPY worker.py .
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt --user --no-cache-dir
-
-RUN apt-get purge -y --auto-remove \
-    build-essential \
-    ca-certificates \
-    curl
+ENV PATH=/home/${USERNAME}/.local/bin:$PATH
+RUN pip install -r requirements.txt --no-cache-dir
 
 CMD ["celery", "-A", "worker", "worker", "--loglevel=info"]

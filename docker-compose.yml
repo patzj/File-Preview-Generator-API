@@ -1,8 +1,43 @@
 version: "3.9"
+
 services:
+  wsgi:
+    image: fpg-wsgi
+    container_name: fpg-wsgi
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.wsgi
+    environment:
+      - BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - BACKEND_URL=redis://redis:6379/0
+    volumes:
+      - shared:/tmp
+    ports:
+      - "5000:5000"
+
   worker:
     image: fpg-worker
     container_name: fpg-worker
     build:
       context: .
       dockerfile: docker/Dockerfile.worker
+    environment:
+      - BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - BACKEND_URL=redis://redis:6379/0
+    volumes:
+      - shared:/tmp
+
+  redis:
+    image: redis
+    container_name: fpg-backend
+    expose:
+      - "6379"
+
+  rabbitmq:
+    image: rabbitmq
+    container_name: fpg-broker
+    expose:
+      - "5672"
+
+volumes:
+  shared:
