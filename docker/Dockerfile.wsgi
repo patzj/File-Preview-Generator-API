@@ -1,17 +1,21 @@
 FROM ubuntu:latest
 
+# send streams straight to terminal
 ENV PYTHONUNBUFFERED=1
 
+# set-up work directory
 ARG APP_HOME=/usr/share/app/
 RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
 
+# create non-root user
 ARG USERNAME=node
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 RUN groupadd --gid $USER_GID $USERNAME && \
     useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 
+# install base image dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
@@ -19,6 +23,8 @@ RUN apt-get update && \
     python3-pip \
     curl
 
+# install algoo/preview-generator dependencies
+# https://github.com/algoo/preview-generator#installation
 RUN apt-get install -y --no-install-recommends \
     poppler-utils \
     libfile-mimeinfo-perl \
@@ -42,13 +48,17 @@ RUN curl -LO https://github.com/jgraph/drawio-desktop/releases/download/v${DRAWI
     mv drawio-x86_64-${DRAWIO_VERSION}.AppImage /usr/local/bin/drawio && \
     chmod +x /usr/local/bin/drawio
 
+# switch to non-root user
 USER $USERNAME
 
+# copy app to work directory
 COPY app app/
 COPY wsgi.py .
 COPY requirements.txt .
 
+# install dependencies
 ENV PATH=/home/${USERNAME}/.local/bin:$PATH
 RUN pip install -r requirements.txt --no-cache-dir
 
+# run the app
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
