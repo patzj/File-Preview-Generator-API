@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   wsgi:
-    image: fpg-wsgi
+    image: patzj/fpg-wsgi
     container_name: fpg-wsgi
     build:
       context: .
@@ -16,7 +16,7 @@ services:
       - "5000:5000"
 
   worker:
-    image: fpg-worker
+    image: patzj/fpg-worker
     container_name: fpg-worker
     build:
       context: .
