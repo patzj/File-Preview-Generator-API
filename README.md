@@ -7,7 +7,7 @@ A containerized service for generating file previews of supported files. This us
 This requires a running `Docker` [Engine](https://docs.docker.com/engine/) _(or [Daemon](https://docs.docker.com/engine/reference/commandline/dockerd/))_ and [Compose](https://docs.docker.com/compose/) tool.
 
 ```sh
-$ docker-compose up -d
+docker-compose up -d
 ```
 
 ## Requesting for Preview
