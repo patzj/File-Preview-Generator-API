@@ -43,3 +43,9 @@ def generate_preview_result(task_id: str):
 
     else:
         return jsonify({"error": "Not found"}), 404
+
+
+@app.route("/read/<filename>", methods=["GET"])
+def read_file(filename: str):
+    with open(filename, "r") as fout:
+        return jsonify({"data": fout.read()})
